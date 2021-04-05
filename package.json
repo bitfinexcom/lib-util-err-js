@@ -1,0 +1,47 @@
+{
+  "name": "@bitfinex/lib-util-err-js",
+  "version": "0.0.1",
+  "description": "Bitfinex lib utility for handling error messages",
+  "main": "index.js",
+  "scripts": {
+    "docs": "jsdoc2md --no-cache --files ./src/*.js ./src/**/*.js > docs/DEFINITIONS.md",
+    "format": "standard --fix",
+    "lint": "standard",
+    "test": "npm run lint && npm run unit",
+    "unit": "NODE_ENV=test mocha ./test/index.test.js"
+  },
+  "keywords": [
+    "utils",
+    "error"
+  ],
+  "author": {
+    "name": "vigan.abd",
+    "email": "vigan.abdurrahmani@bitfinex.com"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bitfinexcom/lib-util-err-js.git"
+  },
+  "maintainers": [
+    {
+      "name": "prdn",
+      "email": "paolo@bitfinex.com"
+    },
+    {
+      "name": "vigan.abd",
+      "email": "vigan.abdurrahmani@bitfinex.com"
+    }
+  ],
+  "bugs": {
+    "url": "https://github.com/bitfinexcom/lib-util-err-js/issues"
+  },
+  "homepage": "https://github.com/bitfinexcom/lib-util-err-js#readme",
+  "devDependencies": {
+    "chai": "^4.3.4",
+    "dirty-chai": "^2.0.1",
+    "jsdoc-to-markdown": "^7.0.1",
+    "mocha": "^8.3.2",
+    "standard": "^16.0.3"
+  }
+}
