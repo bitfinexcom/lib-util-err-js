@@ -4,7 +4,7 @@
   "description": "Bitfinex lib utility for handling error messages",
   "main": "index.js",
   "scripts": {
-    "docs": "jsdoc2md --no-cache --files ./src/*.js ./src/**/*.js > docs/DEFINITIONS.md",
+    "docs": "mkdir -p docs && jsdoc2md --no-cache --files ./src/*.js ./src/**/*.js > docs/DEFINITIONS.md",
     "format": "standard --fix",
     "lint": "standard",
     "test": "npm run lint && npm run unit",
