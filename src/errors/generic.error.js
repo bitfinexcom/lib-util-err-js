@@ -11,7 +11,7 @@ class GenericError extends UserError {
    * @param {string} [basename] - Optional, error message prefix
    */
   constructor (basename = null) {
-    super('generic error', basename, ERR_CODES.ERR_GENERIC)
+    super((basename ? `${basename}: ` : '') + 'generic error', ERR_CODES.ERR_GENERIC)
 
     this.name = this.constructor.name
     Error.captureStackTrace(this, this.constructor)

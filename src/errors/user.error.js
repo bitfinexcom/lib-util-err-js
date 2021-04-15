@@ -8,11 +8,10 @@ const { ERR_CODES } = require('../constants')
 class UserError extends Error {
   /**
    * @param {string} message - Error message
-   * @param {string} [basename] - Optional, error message prefix
    * @param {number} [code] - Optional, error code, default is bfx generic error
    */
-  constructor (message, basename = null, code = null) {
-    super(basename ? `${basename}: ${message}` : message)
+  constructor (message, code = null) {
+    super(message)
 
     this.name = this.constructor.name
     this.code = code || ERR_CODES.ERR_GENERIC
