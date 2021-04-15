@@ -1,12 +1,12 @@
 'use strict'
 
 const { ERR_CODES } = require('../constants')
-const UserError = require('./user.error')
+const GrcUserError = require('./grc.user.error')
 
 /**
  * Generic api error, useful for hiding errors like connection failures
  */
-class GenericError extends UserError {
+class GrcGenericError extends GrcUserError {
   /**
    * @param {string} [basename] - Optional, error message prefix
    */
@@ -18,4 +18,4 @@ class GenericError extends UserError {
   }
 }
 
-module.exports = GenericError
+module.exports = GrcGenericError

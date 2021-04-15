@@ -1,7 +1,7 @@
 'use strict'
 
-const UserError = require('./errors/user.error')
-const GenericError = require('./errors/generic.error')
+const GrcUserError = require('./errors/grc.user.error')
+const GrcGenericError = require('./errors/grc.generic.error')
 const { ERR_CODES } = require('./constants')
 
 /**
@@ -34,15 +34,15 @@ const apiErrorHandler = (err, basename, opts, cb) => {
 
   console.error(new Date().toISOString(), basename, err)
 
-  if (err instanceof UserError || opts.force) {
+  if (err instanceof GrcUserError || opts.force) {
     // in case if force flag is used, debugging purposes
     const prefix = basename ? `${basename}: ` : ''
     const message = prefix + (err.message || err.toString()) // wrap error with basename
     const code = err.code || ERR_CODES.ERR_GENERIC
 
-    cb(new UserError(message, code))
+    cb(new GrcUserError(message, code))
   } else {
-    cb(new GenericError(basename))
+    cb(new GrcGenericError(basename))
   }
 }
 

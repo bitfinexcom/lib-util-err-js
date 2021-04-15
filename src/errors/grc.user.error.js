@@ -5,7 +5,7 @@ const { ERR_CODES, GRC_ERR_TAG } = require('../constants')
 /**
  * User friendly error that is shown directly to endusers
  */
-class UserError extends Error {
+class GrcUserError extends Error {
   /**
    * @param {string} message - Error message
    * @param {number} [code] - Optional, error code, default is bfx generic error
@@ -34,16 +34,16 @@ class UserError extends Error {
   }
 
   /**
-   * Useful to determine if deserialized object could be parsed to UserError
+   * Useful to determine if deserialized object could be parsed to GrcUserError
    * @param {object} err
    * @returns {boolean}
    */
   static hasUserErrorSignature (err) {
-    return err instanceof UserError ||
+    return err instanceof GrcUserError ||
       (typeof err === 'object' && err.grctag === GRC_ERR_TAG &&
         err.message && typeof err.message === 'string' &&
         err.code && typeof err.code === 'number')
   }
 }
 
-module.exports = UserError
+module.exports = GrcUserError
