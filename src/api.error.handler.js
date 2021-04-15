@@ -2,6 +2,7 @@
 
 const UserError = require('./errors/user.error')
 const GenericError = require('./errors/generic.error')
+const { ERR_CODES } = require('./constants')
 
 /**
  * @callback ErrorCallbackFunction
@@ -35,7 +36,11 @@ const apiErrorHandler = (err, basename, opts, cb) => {
 
   if (err instanceof UserError || opts.force) {
     // in case if force flag is used, debugging purposes
-    cb(err)
+    const prefix = basename ? `${basename}: ` : ''
+    const message = prefix + (err.message || err.toString()) // wrap error with basename
+    const code = err.code || ERR_CODES.ERR_GENERIC
+
+    cb(new UserError(message, code))
   } else {
     cb(new GenericError(basename))
   }
