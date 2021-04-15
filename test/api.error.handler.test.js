@@ -39,7 +39,7 @@ module.exports = () => {
     })
 
     it('it should return original error message in case if it\'s instance of UserError', (done) => {
-      apiErrorHandler(new UserError('invalid field', 'MY_FUNCTION', ERR_CODES.ERR_PARAMS), 'MY_FUNCTION', {}, (err) => {
+      apiErrorHandler(new UserError('invalid field', ERR_CODES.ERR_PARAMS), 'MY_FUNCTION', {}, (err) => {
         expect(err).to.be.instanceOf(UserError)
         expect(err.message).to.be.equal('MY_FUNCTION: invalid field')
         expect(err._bfxMessage).to.be.equal('MY_FUNCTION: invalid field')
@@ -51,8 +51,9 @@ module.exports = () => {
 
     it('it should return original error message in case if it has force flag', (done) => {
       apiErrorHandler(new Error('Critical error in db'), 'MY_FUNCTION', { force: true }, (err) => {
-        expect(err).to.be.instanceOf(Error)
-        expect(err.message).to.be.equal('Critical error in db')
+        expect(err).to.be.instanceOf(UserError)
+        expect(err.message).to.be.equal('MY_FUNCTION: Critical error in db')
+        expect(err.code).to.be.equal(ERR_CODES.ERR_GENERIC) // since it's missing add default one!
         done()
       })
     })
@@ -69,7 +70,7 @@ module.exports = () => {
     })
 
     it('it should always log original error', (done) => {
-      apiErrorHandler(new UserError('invalid field', null, ERR_CODES.ERR_PARAMS), (err) => {
+      apiErrorHandler(new UserError('invalid field', ERR_CODES.ERR_PARAMS), (err) => {
         expect(storedLog).not.to.be.null()
         expect(storedLog.includes(err.trace))
         done()
