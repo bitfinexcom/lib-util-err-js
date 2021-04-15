@@ -3,7 +3,7 @@
 /* eslint-env mocha */
 
 const { expect } = require('chai').use(require('dirty-chai'))
-const { UserError, constants: { ERR_CODES } } = require('../')
+const { UserError, constants: { ERR_CODES, GRC_ERR_TAG } } = require('../')
 
 module.exports = () => {
   describe('UserError tests', () => {
@@ -29,6 +29,30 @@ module.exports = () => {
       expect(err.code).to.be.equal(ERR_CODES.ERR_GENERIC)
       expect(err._bfxCode).to.be.equal(ERR_CODES.ERR_GENERIC)
       expect(err.stack.startsWith('UserError: invalid user input')).to.be.true()
+    })
+
+    it('it should serialize only specific fields', () => {
+      const serialized = JSON.stringify(new UserError('invalid user input', ERR_CODES.ERR_PARAMS))
+      const deserialized = JSON.parse(serialized)
+      const expected = {
+        message: 'invalid user input',
+        code: ERR_CODES.ERR_PARAMS,
+        grctag: GRC_ERR_TAG
+      }
+
+      expect(deserialized).to.be.eqls(expected)
+    })
+
+    it('it should be able to detect deserialized objects based on their signature', () => {
+      const serialized = JSON.stringify(new UserError('invalid user input', ERR_CODES.ERR_PARAMS))
+      const deserialized = JSON.parse(serialized)
+      const falseError = {
+        message: 'invalid user input',
+        code: ERR_CODES.ERR_PARAMS
+      }
+
+      expect(UserError.hasUserErrorSignature(falseError)).to.be.false()
+      expect(UserError.hasUserErrorSignature(deserialized)).to.be.true()
     })
   })
 }

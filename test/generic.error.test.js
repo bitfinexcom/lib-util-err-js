@@ -3,7 +3,7 @@
 /* eslint-env mocha */
 
 const { expect } = require('chai').use(require('dirty-chai'))
-const { GenericError, constants: { ERR_CODES } } = require('../')
+const { UserError, GenericError, constants: { ERR_CODES, GRC_ERR_TAG } } = require('../')
 
 module.exports = () => {
   describe('GenericError tests', () => {
@@ -28,6 +28,30 @@ module.exports = () => {
       expect(err.code).to.be.equal(ERR_CODES.ERR_GENERIC)
       expect(err._bfxCode).to.be.equal(ERR_CODES.ERR_GENERIC)
       expect(err.stack.startsWith('GenericError: generic error')).to.be.true()
+    })
+
+    it('it should serialize only specific fields', () => {
+      const serialized = JSON.stringify(new GenericError('MY_FUNC'))
+      const deserialized = JSON.parse(serialized)
+      const expected = {
+        message: 'MY_FUNC: generic error',
+        code: ERR_CODES.ERR_GENERIC,
+        grctag: GRC_ERR_TAG
+      }
+
+      expect(deserialized).to.be.eqls(expected)
+    })
+
+    it('it should be able to be detected as deserialized user error object', () => {
+      const serialized = JSON.stringify(new GenericError('MY_FUNC'))
+      const deserialized = JSON.parse(serialized)
+      const falseError = {
+        message: 'MY_FUNC: generic error',
+        code: ERR_CODES.ERR_GENERIC
+      }
+
+      expect(UserError.hasUserErrorSignature(falseError)).to.be.false()
+      expect(UserError.hasUserErrorSignature(deserialized)).to.be.true()
     })
   })
 }
