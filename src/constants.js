@@ -26,6 +26,9 @@ const ERR_CODES = {
   EVT_INFO: 50000
 }
 
+const GRC_ERR_TAG = 'bfx-grc-error'
+
 module.exports = {
-  ERR_CODES
+  ERR_CODES,
+  GRC_ERR_TAG
 }
