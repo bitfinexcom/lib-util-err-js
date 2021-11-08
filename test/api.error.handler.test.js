@@ -61,10 +61,28 @@ describe('apiErrorHandler tests', () => {
     })
   })
 
+  it('it should work without opts param', (done) => {
+    apiErrorHandler(new Error('Critical error in db'), 'MY_FUNCTION', (err) => {
+      expect(err).to.be.instanceOf(GrcGenericError)
+      expect(err.message).to.be.equal('MY_FUNCTION: generic error')
+      expect(err.code).to.be.equal(null)
+      done()
+    })
+  })
+
   it('it should always log original error', (done) => {
     apiErrorHandler(new GrcUserError('invalid field', 10001), (err) => {
       expect(storedLog).not.to.be.null()
       expect(storedLog.includes(err.trace))
+      done()
+    })
+  })
+
+  it('it should use toString method when error does not have message field', (done) => {
+    apiErrorHandler('Critical error in db', 'MY_FUNCTION', { force: true }, (err) => {
+      expect(err).to.be.instanceOf(GrcUserError)
+      expect(err.message).to.be.equal('MY_FUNCTION: Critical error in db')
+      expect(err.code).to.be.equal(null)
       done()
     })
   })
