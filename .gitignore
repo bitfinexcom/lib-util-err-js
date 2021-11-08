@@ -1,3 +1,5 @@
 node_modules
 package-lock.json
 docs
+.nyc_output
+coverage
