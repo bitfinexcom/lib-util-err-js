@@ -2,7 +2,6 @@
 
 const GrcUserError = require('./errors/grc.user.error')
 const GrcGenericError = require('./errors/grc.generic.error')
-const { ERR_CODES } = require('./constants')
 
 /**
  * @callback ErrorCallbackFunction
@@ -38,7 +37,7 @@ const apiErrorHandler = (err, basename, opts, cb) => {
     // in case if force flag is used, debugging purposes
     const prefix = basename ? `${basename}: ` : ''
     const message = prefix + (err.message || err.toString()) // wrap error with basename
-    const code = err.code || ERR_CODES.ERR_GENERIC
+    const code = err.code || null
 
     cb(new GrcUserError(message, code))
   } else {

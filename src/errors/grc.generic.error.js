@@ -1,6 +1,5 @@
 'use strict'
 
-const { ERR_CODES } = require('../constants')
 const GrcUserError = require('./grc.user.error')
 
 /**
@@ -11,7 +10,7 @@ class GrcGenericError extends GrcUserError {
    * @param {string} [basename] - Optional, error message prefix
    */
   constructor (basename = null) {
-    super((basename ? `${basename}: ` : '') + 'generic error', ERR_CODES.ERR_GENERIC)
+    super((basename ? `${basename}: ` : '') + 'generic error')
 
     this.name = this.constructor.name
     Error.captureStackTrace(this, this.constructor)
