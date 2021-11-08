@@ -4,13 +4,13 @@
   "description": "Bitfinex lib utility for handling error messages",
   "main": "index.js",
   "scripts": {
-    "docs": "mkdir -p docs && jsdoc2md --no-cache --files ./src/*.js ./src/**/*.js > docs/DEFINITIONS.md",
     "format": "standard --fix",
     "lint": "standard",
     "test": "npm run lint && npm run unit",
-    "unit": "NODE_ENV=test mocha ./test/index.test.js"
+    "unit": "NODE_ENV=test mocha ./test"
   },
   "keywords": [
+    "bitfinex",
     "utils",
     "error"
   ],
@@ -40,8 +40,8 @@
   "devDependencies": {
     "chai": "^4.3.4",
     "dirty-chai": "^2.0.1",
-    "jsdoc-to-markdown": "^7.0.1",
-    "mocha": "^8.3.2",
-    "standard": "^16.0.3"
+    "mocha": "^9.1.3",
+    "sinon": "^12.0.1",
+    "standard": "^16.0.4"
   }
 }
