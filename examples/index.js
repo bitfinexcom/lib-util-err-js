@@ -1,22 +1,5 @@
-# lib-util-err-js
+'use strict'
 
-The lib includes the utilities that help on resolving errors that should be shown to the endusers.
-
-## Installing
-
-```console
-npm install --save https://github.com/bitfinexcom/lib-util-err-js.git
-```
-
-## Testing
-
-```console
-npm test
-```
-
-## Usage
-
-```javascript
 const { apiErrorHandler, GrcUserError, constants: { ERR_CODES } } = require('..')
 
 const err = new Error('ERR_CONNECTION_FAILED')
@@ -29,8 +12,3 @@ const cb = (err) => {
 
 apiErrorHandler(err, 'AUTH_FUNCTION', cb)
 apiErrorHandler(userErr, 'AUTH_FUNC', cb)
-
-```
-
-## Authors
-- vigan.abd
