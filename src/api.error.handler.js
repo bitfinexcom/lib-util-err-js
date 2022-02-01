@@ -35,8 +35,9 @@ const apiErrorHandler = (err, basename, opts, cb) => {
 
   if (err instanceof GrcUserError || opts.force) {
     // in case if force flag is used, debugging purposes
-    const prefix = basename ? `${basename}: ` : ''
-    const message = prefix + (err.message || err.toString()) // wrap error with basename
+    let message = err.message || err.toString()
+    const prefix = basename && !message.startsWith(basename) ? `${basename}: ` : ''
+    message = prefix + message // wrap error with basename
     const code = err.code || null
 
     cb(new GrcUserError(message, code))
