@@ -86,4 +86,13 @@ describe('apiErrorHandler tests', () => {
       done()
     })
   })
+
+  it('it should avoid adding prefix more than once', (done) => {
+    apiErrorHandler(new GrcUserError('MY_FUNCTION: invalid field'), 'MY_FUNCTION', (err) => {
+      expect(err).to.be.instanceOf(GrcUserError)
+      expect(err.message).to.be.equal('MY_FUNCTION: invalid field')
+      expect(err.code).to.be.equal(null)
+      done()
+    })
+  })
 })
