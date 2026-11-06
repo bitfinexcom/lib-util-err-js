@@ -1,40 +1,36 @@
 'use strict'
 
-/* eslint-env mocha */
-
-const { expect } = require('chai').use(require('dirty-chai'))
+const test = require('brittle')
 const { GrcUserError } = require('../')
 
-describe('GrcUserError tests', () => {
-  it('it should parse fields properly', () => {
-    const err = new GrcUserError('invalid user input', 10001)
+test('GrcUserError: it should parse fields properly', (t) => {
+  const err = new GrcUserError('invalid user input', 10001)
 
-    expect(err).to.be.instanceOf(Error)
-    expect(err.name).to.be.equal('GrcUserError')
-    expect(err.message).to.be.equal('invalid user input')
-    expect(err.code).to.be.equal(10001)
-    expect(err.stack).to.be.a('string')
-    expect(err.stack.startsWith('GrcUserError: invalid user input')).to.be.true()
-    expect(err.stack.includes(' at ')).to.be.true()
-  })
+  t.ok(err instanceof Error)
+  t.is(err.name, 'GrcUserError')
+  t.is(err.message, 'invalid user input')
+  t.is(err.code, 10001)
+  t.is(typeof err.stack, 'string')
+  t.ok(err.stack.startsWith('GrcUserError: invalid user input'))
+  t.ok(err.stack.includes(' at '))
+})
 
-  it('it should work also without optional params', () => {
-    const err = new GrcUserError('invalid user input')
+test('GrcUserError: it should work also without optional params', (t) => {
+  const err = new GrcUserError('invalid user input')
 
-    expect(err.message).to.be.equal('invalid user input')
-    expect(err.code).to.be.null()
-    expect(err.stack.startsWith('GrcUserError: invalid user input')).to.be.true()
-  })
+  t.is(err.message, 'invalid user input')
+  t.is(err.code, null)
+  t.ok(err.stack.startsWith('GrcUserError: invalid user input'))
+})
 
-  it('it should serialize only specific fields', () => {
-    const serialized = JSON.stringify(new GrcUserError('invalid user input', 10001))
-    const deserialized = JSON.parse(serialized)
-    const expected = {
-      name: 'GrcUserError',
-      message: 'invalid user input',
-      code: 10001
-    }
+test('GrcUserError: it should serialize only specific fields', (t) => {
+  const serialized = JSON.stringify(new GrcUserError('invalid user input', 10001))
+  const deserialized = JSON.parse(serialized)
+  const expected = {
+    name: 'GrcUserError',
+    message: 'invalid user input',
+    code: 10001
+  }
 
-    expect(deserialized).to.be.eqls(expected)
-  })
+  t.alike(deserialized, expected)
 })

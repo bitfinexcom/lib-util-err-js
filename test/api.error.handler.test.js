@@ -1,98 +1,93 @@
 'use strict'
 
-/* eslint-env mocha */
-
-const sinon = require('sinon')
-const { expect } = require('chai').use(require('dirty-chai'))
+const test = require('brittle')
 const { format } = require('util')
 const { GrcGenericError, GrcUserError, apiErrorHandler } = require('../')
 
-describe('apiErrorHandler tests', () => {
-  let storedLog = ''
-  const logStub = sinon.stub(console, 'error')
+// Captures console.error output for the test and restores it afterwards
+const stubConsoleError = (t) => {
+  const logs = []
+  const original = console.error
+  console.error = (...params) => logs.push(format(...params))
+  t.teardown(() => { console.error = original })
+  return logs
+}
 
-  before(() => {
-    logStub.callsFake((...params) => {
-      storedLog = format(...params)
-    })
+test('it should hide original error message in case if it\'s not instance of GrcUserError', (t) => {
+  t.plan(3)
+  stubConsoleError(t)
+  apiErrorHandler(new Error('Critical error in db'), 'MY_FUNCTION', {}, (err) => {
+    t.ok(err instanceof GrcGenericError)
+    t.is(err.message, 'MY_FUNCTION: generic error')
+    t.is(err.code, null)
   })
+})
 
-  after(() => {
-    logStub.restore()
+test('it should return original error message in case if it\'s instance of GrcUserError', (t) => {
+  t.plan(3)
+  stubConsoleError(t)
+  apiErrorHandler(new GrcUserError('invalid field', 10001), 'MY_FUNCTION', {}, (err) => {
+    t.ok(err instanceof GrcUserError)
+    t.is(err.message, 'MY_FUNCTION: invalid field')
+    t.is(err.code, 10001)
   })
+})
 
-  beforeEach(() => {
-    storedLog = ''
+test('it should return original error message in case if it has force flag', (t) => {
+  t.plan(3)
+  stubConsoleError(t)
+  apiErrorHandler(new Error('Critical error in db'), 'MY_FUNCTION', { force: true }, (err) => {
+    t.ok(err instanceof GrcUserError)
+    t.is(err.message, 'MY_FUNCTION: Critical error in db')
+    t.is(err.code, null) // since it's missing add default one!
   })
+})
 
-  it('it should hide original error message in case if it\'s not instance of GrcUserError', (done) => {
-    apiErrorHandler(new Error('Critical error in db'), 'MY_FUNCTION', {}, (err) => {
-      expect(err).to.be.instanceOf(GrcGenericError)
-      expect(err.message).to.be.equal('MY_FUNCTION: generic error')
-      expect(err.code).to.be.equal(null)
-      done()
-    })
+test('it should work without optional params', (t) => {
+  t.plan(3)
+  stubConsoleError(t)
+  apiErrorHandler(new Error('Critical error in db'), (err) => {
+    t.ok(err instanceof GrcGenericError)
+    t.is(err.message, 'generic error')
+    t.is(err.code, null)
   })
+})
 
-  it('it should return original error message in case if it\'s instance of GrcUserError', (done) => {
-    apiErrorHandler(new GrcUserError('invalid field', 10001), 'MY_FUNCTION', {}, (err) => {
-      expect(err).to.be.instanceOf(GrcUserError)
-      expect(err.message).to.be.equal('MY_FUNCTION: invalid field')
-      expect(err.code).to.be.equal(10001)
-      done()
-    })
+test('it should work without opts param', (t) => {
+  t.plan(3)
+  stubConsoleError(t)
+  apiErrorHandler(new Error('Critical error in db'), 'MY_FUNCTION', (err) => {
+    t.ok(err instanceof GrcGenericError)
+    t.is(err.message, 'MY_FUNCTION: generic error')
+    t.is(err.code, null)
   })
+})
 
-  it('it should return original error message in case if it has force flag', (done) => {
-    apiErrorHandler(new Error('Critical error in db'), 'MY_FUNCTION', { force: true }, (err) => {
-      expect(err).to.be.instanceOf(GrcUserError)
-      expect(err.message).to.be.equal('MY_FUNCTION: Critical error in db')
-      expect(err.code).to.be.equal(null) // since it's missing add default one!
-      done()
-    })
+test('it should always log original error', (t) => {
+  t.plan(2)
+  const logs = stubConsoleError(t)
+  apiErrorHandler(new GrcUserError('invalid field', 10001), () => {
+    t.is(logs.length, 1)
+    t.ok(logs[0].includes('GrcUserError: invalid field'))
   })
+})
 
-  it('it should work without optional params', (done) => {
-    apiErrorHandler(new Error('Critical error in db'), (err) => {
-      expect(err).to.be.instanceOf(GrcGenericError)
-      expect(err.message).to.be.equal('generic error')
-      expect(err.code).to.be.equal(null)
-      done()
-    })
+test('it should use toString method when error does not have message field', (t) => {
+  t.plan(3)
+  stubConsoleError(t)
+  apiErrorHandler('Critical error in db', 'MY_FUNCTION', { force: true }, (err) => {
+    t.ok(err instanceof GrcUserError)
+    t.is(err.message, 'MY_FUNCTION: Critical error in db')
+    t.is(err.code, null)
   })
+})
 
-  it('it should work without opts param', (done) => {
-    apiErrorHandler(new Error('Critical error in db'), 'MY_FUNCTION', (err) => {
-      expect(err).to.be.instanceOf(GrcGenericError)
-      expect(err.message).to.be.equal('MY_FUNCTION: generic error')
-      expect(err.code).to.be.equal(null)
-      done()
-    })
-  })
-
-  it('it should always log original error', (done) => {
-    apiErrorHandler(new GrcUserError('invalid field', 10001), (err) => {
-      expect(storedLog).not.to.be.null()
-      expect(storedLog.includes(err.trace))
-      done()
-    })
-  })
-
-  it('it should use toString method when error does not have message field', (done) => {
-    apiErrorHandler('Critical error in db', 'MY_FUNCTION', { force: true }, (err) => {
-      expect(err).to.be.instanceOf(GrcUserError)
-      expect(err.message).to.be.equal('MY_FUNCTION: Critical error in db')
-      expect(err.code).to.be.equal(null)
-      done()
-    })
-  })
-
-  it('it should avoid adding prefix more than once', (done) => {
-    apiErrorHandler(new GrcUserError('MY_FUNCTION: invalid field'), 'MY_FUNCTION', (err) => {
-      expect(err).to.be.instanceOf(GrcUserError)
-      expect(err.message).to.be.equal('MY_FUNCTION: invalid field')
-      expect(err.code).to.be.equal(null)
-      done()
-    })
+test('it should avoid adding prefix more than once', (t) => {
+  t.plan(3)
+  stubConsoleError(t)
+  apiErrorHandler(new GrcUserError('MY_FUNCTION: invalid field'), 'MY_FUNCTION', (err) => {
+    t.ok(err instanceof GrcUserError)
+    t.is(err.message, 'MY_FUNCTION: invalid field')
+    t.is(err.code, null)
   })
 })
