@@ -4,8 +4,10 @@ The lib includes the utilities that help on resolving errors that should be show
 
 ## Installing
 
+Requires Node.js >= 22.
+
 ```console
-npm install --save https://github.com/bitfinexcom/lib-util-err-js.git
+npm install --save https://github.com/bitfinexcom/lib-util-err-js.git#v1.0.0
 ```
 
 ## Testing
