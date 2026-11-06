@@ -14,6 +14,7 @@ npm i @bitfinex/lib-util-err-js
 
 ```console
 npm test
+npm run coverage
 ```
 
 ## Usage
